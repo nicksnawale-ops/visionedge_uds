@@ -1,0 +1,37 @@
+// KPI tiles with 32px sparklines — Royal Blue line, no axes.
+// Full version (tooltip, ← → keyboard reading): src/components/charts/SparklineKpiTiles.tsx
+const tiles = [
+  { label: 'Vehicles today', value: '1,284', trend: '+8.2% vs yesterday', spark: [38, 52, 61, 58, 74, 80, 77, 92, 98, 104, 110, 118] },
+  { label: 'Students present', value: '942', trend: '−1.4% vs yesterday', spark: [960, 958, 955, 951, 949, 950, 947, 945, 944, 943, 942, 942] },
+  { label: 'Meals served', value: '2,310', trend: '+5.7% vs last week', spark: [2186, 2190, 2205, 2198, 2230, 2244, 2251, 2262, 2270, 2288, 2296, 2310] },
+  { label: 'Active cameras', value: '36/38', trend: '2 offline since 06:00', spark: [38, 38, 37, 38, 37, 36, 37, 36, 36, 36, 37, 36] },
+];
+
+function Sparkline({ values, label }: { values: number[]; label: string }) {
+  const W = 200, H = 32, P = 3;
+  const min = Math.min(...values), range = Math.max(...values) - min || 1;
+  const points = values
+    .map((v, i) => `${P + (i * (W - 2 * P)) / (values.length - 1)},${H - P - ((v - min) / range) * (H - 2 * P)}`)
+    .join(' ');
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="w-full h-8" role="img"
+      aria-label={`${label}: from ${values[0]} to ${values[values.length - 1]}`}>
+      <polyline points={points} fill="none" stroke="#1E63FF" strokeWidth={1.5} vectorEffect="non-scaling-stroke" />
+    </svg>
+  );
+}
+
+export function KpiSparklineTiles() {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {tiles.map((t) => (
+        <div key={t.label} className="bg-white p-6 rounded-[12px] border border-[#DDE2EA] flex flex-col gap-3">
+          <span className="text-[11px] font-medium uppercase tracking-[0.08em] text-[#6B7485]">{t.label}</span>
+          <span className="text-[32px] leading-[40px] font-bold text-[#0B2D6B] tabular-nums">{t.value}</span>
+          <Sparkline values={t.spark} label={t.label} />
+          <span className="text-[12px] text-[#4B5465]">{t.trend}</span>
+        </div>
+      ))}
+    </div>
+  );
+}

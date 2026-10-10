@@ -1,0 +1,39 @@
+// Progress / bullet bars — 8px Gray 100 track, Royal Blue fill, 2px Deep Navy target marker.
+// Full version: src/components/charts/BulletBars.tsx
+const blocks = [
+  { block: 'Block A', occupied: 228, capacity: 240, target: 90 },
+  { block: 'Block B', occupied: 196, capacity: 240, target: 90 },
+  { block: 'Block C', occupied: 291, capacity: 300, target: 95 },
+  { block: 'Block D', occupied: 142, capacity: 200, target: 85 },
+  { block: 'Block E', occupied: 170, capacity: 220, target: 85 },
+];
+
+export function HostelBlockOccupancy() {
+  return (
+    <div className="bg-white p-6 rounded-[12px] border border-[#DDE2EA]">
+      <h3 className="text-[16px] font-semibold text-[#121722]">Hostel block occupancy</h3>
+      <p className="text-[12px] text-[#4B5465] mb-4">HostelTrack · Tonight · 30 Sep 2026</p>
+
+      <ul className="space-y-0" role="img" aria-label="Block C is fullest at 97%; 2 of 5 blocks are at or above target.">
+        {blocks.map((b) => {
+          const pct = (b.occupied / b.capacity) * 100;
+          return (
+            <li
+              key={b.block}
+              tabIndex={0}
+              aria-label={`${b.block}: ${Math.round(pct)}% occupied, target ${b.target}%`}
+              className="grid grid-cols-[64px_1fr_48px] items-center gap-3 h-9 rounded-[4px] outline-none focus-visible:outline-2 focus-visible:outline-[#1E63FF]"
+            >
+              <span className="text-[14px] text-[#353D4C]">{b.block}</span>
+              <div className="relative h-2 rounded-full bg-[#EEF1F6]">
+                <div className="absolute inset-y-0 left-0 rounded-full bg-[#1E63FF]" style={{ width: `${pct}%` }} />
+                <div className="absolute -top-1 -bottom-1 w-[2px] bg-[#0B2D6B]" style={{ left: `calc(${b.target}% - 1px)` }} />
+              </div>
+              <span className="text-[14px] font-medium text-[#121722] text-right tabular-nums">{Math.round(pct)}%</span>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}

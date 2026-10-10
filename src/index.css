@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+:root {
+  --ve-deep-navy: #0B2D6B;
+  --ve-royal-blue: #1E63FF;
+  --ve-cyan: #00C6FF;
+  --ve-white: #FFFFFF;
+  --ve-gray-50: #F7F9FC;
+  --ve-gray-100: #EEF1F6;
+  --ve-gray-200: #DDE2EA;
+  --ve-gray-300: #C3CAD5;
+  --ve-gray-400: #8C95A6;
+  --ve-gray-500: #6B7485;
+  --ve-gray-600: #4B5465;
+  --ve-gray-700: #353D4C;
+  --ve-gray-800: #1F2633;
+  --ve-gray-900: #121722;
+  --ve-black: #000000;
+
+  --ve-font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  --ve-font-mono: "JetBrains Mono", Consolas, "Courier New", monospace;
+
+  --ve-space-1: 4px;
+  --ve-space-2: 8px;
+  --ve-space-3: 12px;
+  --ve-space-4: 16px;
+  --ve-space-6: 24px;
+  --ve-space-8: 32px;
+  --ve-space-12: 48px;
+  --ve-space-16: 64px;
+
+  --ve-radius-sm: 4px;
+  --ve-radius-md: 8px;
+  --ve-radius-lg: 12px;
+  --ve-radius-xl: 16px;
+  --ve-radius-full: 999px;
+
+  --ve-shadow-0: none;
+  --ve-shadow-1: 0 1px 3px rgba(11, 45, 107, 0.08);
+  --ve-shadow-2: 0 4px 12px rgba(11, 45, 107, 0.12);
+  --ve-shadow-3: 0 12px 32px rgba(11, 45, 107, 0.18);
+
+  --ve-focus-ring: 0 0 0 2px #FFFFFF, 0 0 0 4px #1E63FF;
+}
+
+/* THEME LOCK: LIGHT THEME STRICTLY ENFORCED */
+html, body, #root {
+  background: #FFFFFF !important;
+  color: #353D4C !important;
+  font-family: var(--ve-font-sans);
+  min-height: 100vh;
+}
+
+/* Custom scrollbars for main view and sidebar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #C3CAD5;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #8C95A6;
+}
+
+/* Sidebar scrollbar on navy */
+.sidebar-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+/* Dotted grid preview canvas */
+.preview-grid-canvas {
+  background-color: #F7F9FC;
+  background-image: radial-gradient(#DDE2EA 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+/* Interactive columns grid overlay */
+.layout-grid-overlay {
+  background-size: calc((100% - (11 * 24px)) / 12) 100%;
+}

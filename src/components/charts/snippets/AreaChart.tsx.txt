@@ -1,0 +1,48 @@
+// Area chart — single series, Royal Blue line + Royal Blue 12% fill.
+// Full version with tooltip, focus and resize: src/components/charts/AreaChart.tsx
+const occupancy = [
+  1148, 1152, 1156, 1158, 1160, 1154, 1120, 980, 720, 460, 340, 302,
+  318, 284, 296, 330, 410, 620, 840, 980, 1068, 1112, 1140, 1162,
+];
+
+const W = 600, H = 240;
+const M = { top: 12, right: 16, bottom: 28, left: 48 };
+const MAX = 1200;
+const x = (i: number) => M.left + (i * (W - M.left - M.right)) / (occupancy.length - 1);
+const y = (v: number) => H - M.bottom - (v / MAX) * (H - M.top - M.bottom);
+const line = occupancy.map((v, i) => `${i ? 'L' : 'M'}${x(i)},${y(v)}`).join('');
+const area = `${line}L${x(occupancy.length - 1)},${y(0)}L${x(0)},${y(0)}Z`;
+
+export function HostelOccupancyArea() {
+  return (
+    <div className="bg-white p-6 rounded-[12px] border border-[#DDE2EA]">
+      <h3 className="text-[16px] font-semibold text-[#121722]">Hostel occupancy through the day</h3>
+      <p className="text-[12px] text-[#4B5465] mb-4">HostelTrack · Today · 30 Sep 2026</p>
+
+      <svg
+        viewBox={`0 0 ${W} ${H}`}
+        className="w-full"
+        role="img"
+        aria-label="Hostel occupancy peaks at 1,162 at 23:00 and drops to 284 at 13:00."
+      >
+        {[0, 300, 600, 900, 1200].map((t) => (
+          <g key={t}>
+            <line x1={M.left} x2={W - M.right} y1={y(t)} y2={y(t)} stroke="#DDE2EA" strokeWidth={1} />
+            <text x={M.left - 8} y={y(t)} dy="0.32em" textAnchor="end" fontSize={12} fill="#4B5465" className="tabular-nums">
+              {t.toLocaleString('en-US')}
+            </text>
+          </g>
+        ))}
+        <path d={area} fill="#1E63FF" fillOpacity={0.12} />
+        <path d={line} fill="none" stroke="#1E63FF" strokeWidth={2} strokeLinejoin="round" />
+        {occupancy.map((_, h) =>
+          h % 3 === 0 ? (
+            <text key={h} x={x(h)} y={H - 6} textAnchor="middle" fontSize={12} fill="#4B5465">
+              {String(h).padStart(2, '0')}:00
+            </text>
+          ) : null
+        )}
+      </svg>
+    </div>
+  );
+}

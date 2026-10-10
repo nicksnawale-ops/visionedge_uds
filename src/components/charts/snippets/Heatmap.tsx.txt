@@ -1,0 +1,58 @@
+// Heatmap — 7 weekdays × 24 hours, 5-step Royal Blue scale only.
+// Under 768px the grid scrolls inside its own container (min-width 640px).
+// Full version (tooltip, roving keyboard focus): src/components/charts/Heatmap.tsx
+import React from 'react';
+
+const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const hourProfile = [4, 2, 1, 1, 2, 8, 28, 96, 182, 124, 78, 64, 72, 70, 62, 74, 110, 168, 132, 74, 46, 30, 18, 9];
+const dayFactor = [1, 0.97, 1.02, 0.99, 0.94, 0.48, 0.36];
+const grid = days.map((_, d) => hourProfile.map((v, h) => Math.round(v * dayFactor[d]) + ((d * 7 + h * 13) % 9)));
+
+// #F7F9FC, then Royal Blue at 20 / 40 / 70 / 100%
+const SCALE = [
+  { color: '#F7F9FC', opacity: 1 },
+  { color: '#1E63FF', opacity: 0.2 },
+  { color: '#1E63FF', opacity: 0.4 },
+  { color: '#1E63FF', opacity: 0.7 },
+  { color: '#1E63FF', opacity: 1 },
+];
+const max = Math.max(...grid.flat());
+const step = Math.ceil(max / SCALE.length);
+const bucket = (v: number) => SCALE[Math.min(SCALE.length - 1, Math.floor(v / step))];
+
+export function GateTrafficHeatmap() {
+  return (
+    <div className="bg-white p-6 rounded-[12px] border border-[#DDE2EA]">
+      <h3 className="text-[16px] font-semibold text-[#121722]">Gate traffic by hour and weekday</h3>
+      <p className="text-[12px] text-[#4B5465] mb-4">ANPR · 24–30 Sep 2026</p>
+
+      <div className="overflow-x-auto">
+        <div className="min-w-[640px] grid grid-cols-[40px_repeat(24,minmax(0,1fr))] gap-[2px]" role="img" aria-label="Busiest slot: Wed 08:00. Weekends are much quieter.">
+          {grid.map((row, d) => (
+            <React.Fragment key={days[d]}>
+              <span className="text-[12px] text-[#4B5465] self-center">{days[d]}</span>
+              {row.map((v, h) => {
+                const s = bucket(v);
+                return (
+                  <span key={h} className="h-[22px] rounded-[2px] relative" title={`${days[d]} ${h}:00 — ${v} entries`}>
+                    <span className="absolute inset-0 rounded-[2px]" style={{ backgroundColor: s.color, opacity: s.opacity }} />
+                  </span>
+                );
+              })}
+            </React.Fragment>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-4 flex items-center justify-end gap-2 text-[12px] text-[#353D4C]">
+        Fewer
+        {SCALE.map((s, i) => (
+          <span key={i} className="w-9 h-3 rounded-[2px] border border-[#DDE2EA] relative overflow-hidden">
+            <span className="absolute inset-0" style={{ backgroundColor: s.color, opacity: s.opacity }} />
+          </span>
+        ))}
+        More
+      </div>
+    </div>
+  );
+}

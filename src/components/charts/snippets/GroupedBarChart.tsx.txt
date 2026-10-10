@@ -1,0 +1,68 @@
+// Grouped bar chart — this week Royal Blue, last week Royal Blue at 50% opacity.
+// Full version: src/components/charts/GroupedBarChart.tsx
+const meals = [
+  { day: 'Mon', thisWeek: 2310, lastWeek: 2186 },
+  { day: 'Tue', thisWeek: 2284, lastWeek: 2240 },
+  { day: 'Wed', thisWeek: 2402, lastWeek: 2318 },
+  { day: 'Thu', thisWeek: 2356, lastWeek: 2290 },
+  { day: 'Fri', thisWeek: 2298, lastWeek: 2342 },
+  { day: 'Sat', thisWeek: 1642, lastWeek: 1590 },
+  { day: 'Sun', thisWeek: 1518, lastWeek: 1476 },
+];
+const series = [
+  { key: 'thisWeek', label: 'This week', opacity: 1 },
+  { key: 'lastWeek', label: 'Last week', opacity: 0.5 },
+] as const;
+
+const W = 600, H = 260;
+const M = { top: 12, right: 16, bottom: 28, left: 48 };
+const MAX = 2500;
+const band = (W - M.left - M.right) / meals.length;
+const barW = Math.min(band * 0.3, 28);
+const gap = barW * 0.3; // gap between the pair = 30% of bar width
+const y = (v: number) => H - M.bottom - (v / MAX) * (H - M.top - M.bottom);
+const topRounded = (x: number, top: number, w: number, h: number, r = 4) =>
+  `M${x},${top + h}V${top + r}A${r},${r} 0 0 1 ${x + r},${top}H${x + w - r}A${r},${r} 0 0 1 ${x + w},${top + r}V${top + h}Z`;
+
+export function MealsWeekOverWeek() {
+  return (
+    <div className="bg-white p-6 rounded-[12px] border border-[#DDE2EA]">
+      <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-2 mb-4">
+        <div>
+          <h3 className="text-[16px] font-semibold text-[#121722]">Meals served: this week vs last week</h3>
+          <p className="text-[12px] text-[#4B5465]">Meal Pulse · 24–30 Sep 2026</p>
+        </div>
+        <ul className="flex flex-wrap gap-x-4 gap-y-1">
+          {series.map((s) => (
+            <li key={s.key} className="flex items-center gap-1.5 text-[12px] text-[#353D4C]">
+              <span className="w-2 h-2 rounded-full bg-[#1E63FF]" style={{ opacity: s.opacity }} />
+              {s.label}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label="14,810 meals this week vs 14,442 last week (+2.5%).">
+        {[0, 500, 1000, 1500, 2000, 2500].map((t) => (
+          <line key={t} x1={M.left} x2={W - M.right} y1={y(t)} y2={y(t)} stroke="#DDE2EA" strokeWidth={1} />
+        ))}
+        {meals.map((d, i) =>
+          series.map((s, si) => {
+            const x = M.left + band * i + band / 2 - barW - gap / 2 + si * (barW + gap);
+            const top = y(d[s.key]);
+            return (
+              <path
+                key={`${d.day}-${s.key}`}
+                d={topRounded(x, top, barW, y(0) - top)}
+                fill="#1E63FF"
+                fillOpacity={s.opacity}
+                tabIndex={0}
+                aria-label={`${d.day}, ${s.label}: ${d[s.key].toLocaleString('en-US')} meals`}
+              />
+            );
+          })
+        )}
+      </svg>
+    </div>
+  );
+}

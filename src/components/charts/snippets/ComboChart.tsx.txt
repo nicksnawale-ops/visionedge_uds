@@ -1,0 +1,57 @@
+// Combo chart — Deep Navy bars on the left axis, Cyan line with dots on the right axis.
+// Full version: src/components/charts/ComboChart.tsx
+const days = [
+  { day: 'Thu 24', entries: 1302, attempts: 7 },
+  { day: 'Fri 25', entries: 1256, attempts: 11 },
+  { day: 'Sat 26', entries: 876, attempts: 19 },
+  { day: 'Sun 27', entries: 742, attempts: 14 },
+  { day: 'Mon 28', entries: 1318, attempts: 6 },
+  { day: 'Tue 29', entries: 1347, attempts: 9 },
+  { day: 'Wed 30', entries: 1284, attempts: 5 },
+];
+
+const W = 640, H = 280;
+const M = { top: 12, right: 64, bottom: 28, left: 64 };
+const LEFT_MAX = 1500, RIGHT_MAX = 21; // same number of ticks on both axes
+const plotH = H - M.top - M.bottom;
+const band = (W - M.left - M.right) / days.length;
+const barW = Math.min(band * 0.5, 40);
+const cx = (i: number) => M.left + band * i + band / 2;
+const yL = (v: number) => M.top + plotH - (v / LEFT_MAX) * plotH;
+const yR = (v: number) => M.top + plotH - (v / RIGHT_MAX) * plotH;
+const topRounded = (x: number, top: number, w: number, h: number, r = 4) =>
+  `M${x},${top + h}V${top + r}A${r},${r} 0 0 1 ${x + r},${top}H${x + w - r}A${r},${r} 0 0 1 ${x + w},${top + r}V${top + h}Z`;
+
+export function EntriesVsAttemptsCombo() {
+  return (
+    <div className="bg-white p-6 rounded-[12px] border border-[#DDE2EA]">
+      <h3 className="text-[16px] font-semibold text-[#121722]">Daily entries vs unauthorized attempts</h3>
+      <p className="text-[12px] text-[#4B5465] mb-4">ANPR · Last 7 days</p>
+
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label="Unauthorized attempts peaked on Sat 26 at 19.">
+        {[0, 1, 2, 3].map((i) => (
+          <g key={i} fontSize={12} fill="#4B5465" className="tabular-nums">
+            <line x1={M.left} x2={W - M.right} y1={yL(i * 500)} y2={yL(i * 500)} stroke="#DDE2EA" strokeWidth={1} />
+            <text x={M.left - 8} y={yL(i * 500)} dy="0.32em" textAnchor="end">{(i * 500).toLocaleString('en-US')}</text>
+            <text x={W - M.right + 8} y={yR(i * 7)} dy="0.32em">{i * 7}</text>
+          </g>
+        ))}
+        <text transform={`translate(14 ${M.top + plotH / 2}) rotate(-90)`} textAnchor="middle" fontSize={12} fill="#4B5465">Entries</text>
+        <text transform={`translate(${W - 14} ${M.top + plotH / 2}) rotate(90)`} textAnchor="middle" fontSize={12} fill="#4B5465">Unauthorized attempts</text>
+
+        {days.map((d, i) => (
+          <path key={d.day} d={topRounded(cx(i) - barW / 2, yL(d.entries), barW, yL(0) - yL(d.entries))} fill="#0B2D6B" />
+        ))}
+        <polyline
+          points={days.map((d, i) => `${cx(i)},${yR(d.attempts)}`).join(' ')}
+          fill="none"
+          stroke="#00C6FF"
+          strokeWidth={2}
+        />
+        {days.map((d, i) => (
+          <circle key={d.day} cx={cx(i)} cy={yR(d.attempts)} r={4.5} fill="#00C6FF" stroke="#FFFFFF" strokeWidth={2} />
+        ))}
+      </svg>
+    </div>
+  );
+}

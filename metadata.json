@@ -1,0 +1,6 @@
+{
+  "name": "VisionEdge Design System",
+  "description": "The enterprise design system and UI standards documentation for VisionEdge Technology Platform.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

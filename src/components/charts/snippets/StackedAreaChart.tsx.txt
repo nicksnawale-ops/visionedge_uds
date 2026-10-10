@@ -1,0 +1,55 @@
+// Stacked area — Regular / Commercial / VIP stacked bottom → top at 70% opacity.
+// Full version: src/components/charts/StackedAreaChart.tsx
+const hours = ['06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21'];
+const series = [
+  { label: 'Regular', color: '#0B2D6B', values: [42, 168, 312, 286, 198, 164, 182, 210, 176, 158, 192, 248, 302, 226, 118, 64] },
+  { label: 'Commercial', color: '#1E63FF', values: [18, 46, 84, 96, 102, 88, 74, 92, 98, 86, 72, 54, 38, 26, 14, 8] },
+  { label: 'VIP', color: '#00C6FF', values: [2, 6, 14, 18, 12, 8, 10, 16, 12, 9, 11, 15, 12, 6, 3, 1] },
+];
+
+const W = 600, H = 240;
+const M = { top: 12, right: 16, bottom: 28, left: 48 };
+const MAX = 500;
+const x = (i: number) => M.left + (i * (W - M.left - M.right)) / (hours.length - 1);
+const y = (v: number) => H - M.bottom - (v / MAX) * (H - M.top - M.bottom);
+
+// cumulative[s][i] = sum of series 0..s at hour i
+const cumulative = series.map((_, s) =>
+  hours.map((_, i) => series.slice(0, s + 1).reduce((sum, ser) => sum + ser.values[i], 0))
+);
+
+const layer = (s: number) => {
+  const top = hours.map((_, i) => `${x(i)},${y(cumulative[s][i])}`);
+  const bottom = hours.map((_, i) => `${x(i)},${y(s ? cumulative[s - 1][i] : 0)}`).reverse();
+  return `M${top.join('L')}L${bottom.join('L')}Z`;
+};
+
+export function CampusEntriesStackedArea() {
+  return (
+    <div className="bg-white p-6 rounded-[12px] border border-[#DDE2EA]">
+      <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-2 mb-4">
+        <div>
+          <h3 className="text-[16px] font-semibold text-[#121722]">Campus entries by vehicle type</h3>
+          <p className="text-[12px] text-[#4B5465]">ANPR · Today · 30 Sep 2026</p>
+        </div>
+        <ul className="flex flex-wrap gap-x-4 gap-y-1">
+          {series.map((s) => (
+            <li key={s.label} className="flex items-center gap-1.5 text-[12px] text-[#353D4C]">
+              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: s.color, opacity: 0.7 }} />
+              {s.label}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label="Regular vehicles make up most entries; total peaks at 08:00 with 410.">
+        {[0, 100, 200, 300, 400, 500].map((t) => (
+          <line key={t} x1={M.left} x2={W - M.right} y1={y(t)} y2={y(t)} stroke="#DDE2EA" strokeWidth={1} />
+        ))}
+        {series.map((s, i) => (
+          <path key={s.label} d={layer(i)} fill={s.color} fillOpacity={0.7} />
+        ))}
+      </svg>
+    </div>
+  );
+}

@@ -1,0 +1,65 @@
+// Vertical bar chart — Deep Navy bars, 4px top radius, value label on top.
+// Full version: src/components/charts/BarChart.tsx
+import React from 'react';
+
+const gates = [
+  { label: 'Gate 1', value: 286 },
+  { label: 'Gate 2', value: 198 },
+  { label: 'Gate 3', value: 412 },
+  { label: 'Gate 4', value: 157 },
+  { label: 'Gate 5', value: 233 },
+  { label: 'Gate 6', value: 98 },
+];
+
+const W = 600, H = 260;
+const M = { top: 24, right: 16, bottom: 28, left: 48 };
+const MAX = 500;
+const band = (W - M.left - M.right) / gates.length;
+const barW = band * 0.56; // leaves a gap well above 30% of the bar width
+const y = (v: number) => H - M.bottom - (v / MAX) * (H - M.top - M.bottom);
+
+/** Rect with only the top corners rounded. */
+const topRounded = (x: number, top: number, w: number, h: number, r = 4) =>
+  `M${x},${top + h}V${top + r}A${r},${r} 0 0 1 ${x + r},${top}H${x + w - r}A${r},${r} 0 0 1 ${x + w},${top + r}V${top + h}Z`;
+
+export function EntriesByGateBar() {
+  const [hovered, setHovered] = React.useState<number | null>(null);
+
+  return (
+    <div className="bg-white p-6 rounded-[12px] border border-[#DDE2EA]">
+      <h3 className="text-[16px] font-semibold text-[#121722]">Vehicle entries by gate</h3>
+      <p className="text-[12px] text-[#4B5465] mb-4">ANPR · Today · 30 Sep 2026</p>
+
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label="Gate 3 had the most entries: 412">
+        {[0, 100, 200, 300, 400, 500].map((t) => (
+          <line key={t} x1={M.left} x2={W - M.right} y1={y(t)} y2={y(t)} stroke="#DDE2EA" strokeWidth={1} />
+        ))}
+        {gates.map((g, i) => {
+          const cx = M.left + band * i + band / 2;
+          const top = y(g.value);
+          return (
+            <g key={g.label} opacity={hovered === null || hovered === i ? 1 : 0.4}>
+              <path
+                d={topRounded(cx - barW / 2, top, barW, y(0) - top)}
+                fill="#0B2D6B"
+                tabIndex={0}
+                aria-label={`${g.label}: ${g.value} entries`}
+                className="cursor-pointer outline-none focus-visible:outline-2 focus-visible:outline-[#1E63FF]"
+                onMouseEnter={() => setHovered(i)}
+                onMouseLeave={() => setHovered(null)}
+                onFocus={() => setHovered(i)}
+                onBlur={() => setHovered(null)}
+              />
+              <text x={cx} y={top - 6} textAnchor="middle" fontSize={12} fill="#353D4C" className="tabular-nums">
+                {g.value.toLocaleString('en-US')}
+              </text>
+              <text x={cx} y={H - 6} textAnchor="middle" fontSize={12} fill="#4B5465">
+                {g.label}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}

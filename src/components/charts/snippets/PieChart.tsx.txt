@@ -1,0 +1,57 @@
+// Pie chart — max 4 slices, 2px white separators, percentage labels outside on leader lines.
+// Prefer the donut chart. Use pie only for 2–4 parts of a whole.
+// Full version: src/components/charts/PieChart.tsx
+const purposes = [
+  { label: 'Delivery', value: 142, color: '#0B2D6B' },
+  { label: 'Parent visit', value: 96, color: '#1E63FF' },
+  { label: 'Vendor', value: 58, color: '#00C6FF' },
+  { label: 'Other', value: 24, color: '#8C95A6' },
+];
+
+const total = purposes.reduce((sum, p) => sum + p.value, 0);
+const CX = 180, CY = 130, R = 96;
+const at = (r: number, a: number) => ({ x: CX + r * Math.cos(a), y: CY + r * Math.sin(a) });
+
+let start = -Math.PI / 2;
+const slices = purposes.map((p) => {
+  const sweep = (p.value / total) * Math.PI * 2;
+  const end = start + sweep;
+  const mid = start + sweep / 2;
+  const a = at(R, start), b = at(R, end);
+  const slice = {
+    ...p,
+    pct: Math.round((p.value / total) * 100),
+    path: `M${CX},${CY}L${a.x},${a.y}A${R},${R} 0 ${sweep > Math.PI ? 1 : 0} 1 ${b.x},${b.y}Z`,
+    mid,
+  };
+  start = end;
+  return slice;
+});
+
+export function VisitorPurposePie() {
+  return (
+    <div className="bg-white p-6 rounded-[12px] border border-[#DDE2EA]">
+      <h3 className="text-[16px] font-semibold text-[#121722]">Visitor purpose split</h3>
+      <p className="text-[12px] text-[#4B5465] mb-4">Visitor desk · Today · 30 Sep 2026</p>
+
+      <svg viewBox="0 0 360 260" className="w-full max-w-[360px] mx-auto" role="img" aria-label="Delivery is the largest share at 44% of 320 visitors.">
+        {slices.map((s) => (
+          <path key={s.label} d={s.path} fill={s.color} stroke="#FFFFFF" strokeWidth={2} tabIndex={0} aria-label={`${s.label}: ${s.value} visitors, ${s.pct}%`} />
+        ))}
+        {slices.map((s) => {
+          const right = Math.cos(s.mid) >= 0;
+          const p1 = at(R + 4, s.mid), p2 = at(R + 16, s.mid);
+          const p3 = { x: p2.x + (right ? 12 : -12), y: p2.y };
+          return (
+            <g key={`label-${s.label}`}>
+              <polyline points={`${p1.x},${p1.y} ${p2.x},${p2.y} ${p3.x},${p3.y}`} fill="none" stroke="#8C95A6" strokeWidth={1} />
+              <text x={p3.x + (right ? 4 : -4)} y={p3.y} dy="0.32em" textAnchor={right ? 'start' : 'end'} fontSize={12} fontWeight={600} fill="#121722">
+                {s.pct}%
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}

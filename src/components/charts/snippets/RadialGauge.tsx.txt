@@ -1,0 +1,38 @@
+// Radial gauge — 270° arc, Gray 200 track, Royal Blue value, Deep Navy target tick.
+// Full version: src/components/charts/RadialGauge.tsx
+const VALUE = 94.7, TARGET = 98;
+const CX = 120, CY = 116, R = 92, STROKE = 14;
+const START = 135, SWEEP = 270; // degrees, clockwise from 3 o'clock
+
+const pt = (deg: number, r = R) => ({
+  x: CX + r * Math.cos((deg * Math.PI) / 180),
+  y: CY + r * Math.sin((deg * Math.PI) / 180),
+});
+const arc = (from: number, to: number) => {
+  const a = pt(from), b = pt(to);
+  return `M${a.x},${a.y}A${R},${R} 0 ${to - from > 180 ? 1 : 0} 1 ${b.x},${b.y}`;
+};
+
+export function CameraUptimeGauge() {
+  const targetDeg = START + (SWEEP * TARGET) / 100;
+  const tickIn = pt(targetDeg, R - STROKE / 2 - 5), tickOut = pt(targetDeg, R + STROKE / 2 + 5);
+
+  return (
+    <div className="bg-white p-6 rounded-[12px] border border-[#DDE2EA] max-w-md">
+      <h3 className="text-[16px] font-semibold text-[#121722]">Camera network uptime</h3>
+      <p className="text-[12px] text-[#4B5465] mb-4">Last 30 days · 38 cameras</p>
+
+      <div className="relative mx-auto" style={{ width: 240, height: 210 }}>
+        <svg width={240} height={210} role="img" aria-label="Camera network uptime is 94.7%, 3.3 points below the 98% target.">
+          <path d={arc(START, START + SWEEP)} fill="none" stroke="#DDE2EA" strokeWidth={STROKE} />
+          <path d={arc(START, START + (SWEEP * VALUE) / 100)} fill="none" stroke="#1E63FF" strokeWidth={STROKE} />
+          <line x1={tickIn.x} y1={tickIn.y} x2={tickOut.x} y2={tickOut.y} stroke="#0B2D6B" strokeWidth={2} />
+        </svg>
+        <div className="absolute inset-x-0 top-[78px] flex flex-col items-center">
+          <span className="text-[32px] leading-[40px] font-bold text-[#0B2D6B] tabular-nums">{VALUE}%</span>
+          <span className="text-[12px] text-[#4B5465]">Target {TARGET}%</span>
+        </div>
+      </div>
+    </div>
+  );
+}

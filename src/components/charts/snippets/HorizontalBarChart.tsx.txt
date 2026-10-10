@@ -1,0 +1,45 @@
+// Horizontal bar chart — sorted largest first, camera IDs in JetBrains Mono, values right of bars.
+// Under 768px the chart scrolls inside its own container (min-width 520px).
+// Full version: src/components/charts/HorizontalBarChart.tsx
+const cameras = [
+  { id: 'CAM_GATE_01_R1', value: 1516 },
+  { id: 'CAM_HOSTEL_C_01', value: 962 },
+  { id: 'CAM_GATE_03_R1', value: 1842 },
+  { id: 'CAM_MESS_01', value: 731 },
+  { id: 'CAM_PARK_B_02', value: 1288 },
+  { id: 'CAM_GATE_02_R1', value: 874 },
+  { id: 'CAM_LIB_EXIT_01', value: 588 },
+  { id: 'CAM_GATE_05_R2', value: 1104 },
+].sort((a, b) => b.value - a.value);
+
+const max = cameras[0].value;
+
+export function TopCamerasBar() {
+  return (
+    <div className="bg-white p-6 rounded-[12px] border border-[#DDE2EA]">
+      <h3 className="text-[16px] font-semibold text-[#121722]">Top 8 cameras by detections</h3>
+      <p className="text-[12px] text-[#4B5465] mb-4">Today · 30 Sep 2026</p>
+
+      <div className="overflow-x-auto">
+        <ul className="min-w-[520px] space-y-3" role="img" aria-label="CAM_GATE_03_R1 had the most detections: 1,842">
+          {cameras.map((c) => (
+            <li key={c.id} className="grid grid-cols-[136px_1fr] items-center gap-3">
+              <span className="font-mono text-[12px] text-[#4B5465] text-right">{c.id}</span>
+              <span className="flex items-center gap-2">
+                <span
+                  tabIndex={0}
+                  aria-label={`${c.id}: ${c.value} detections`}
+                  className="h-5 bg-[#1E63FF] rounded-r-[4px] outline-none focus-visible:ring-2 focus-visible:ring-[#1E63FF] focus-visible:ring-offset-2"
+                  style={{ width: `calc((100% - 56px) * ${c.value / max})` }}
+                />
+                <span className="text-[12px] font-medium text-[#353D4C] tabular-nums">
+                  {c.value.toLocaleString('en-US')}
+                </span>
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
