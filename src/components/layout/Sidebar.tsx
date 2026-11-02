@@ -36,6 +36,7 @@ import {
 } from 'lucide-react';
 import { Logo } from '../brand/Logo';
 import { NAV_GROUPS, PageMeta } from '../../data/pages';
+import { SidebarLensPulse } from './SidebarLensPulse';
 
 interface SidebarProps {
   currentPath: string;
@@ -175,6 +176,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
             : '-translate-x-full md:translate-x-0'
         }`}
       >
+        {/* Decorative lens pulse (behind content) */}
+        <SidebarLensPulse collapsed={collapsed && !isMobileOpen} />
+
         {/* Top Logo Section */}
         <div className="h-[64px] flex items-center justify-between px-4 border-b border-white/10 shrink-0">
           {collapsed && !isMobileOpen ? (
@@ -210,12 +214,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Scrollable Navigation Groups */}
-        <div className="flex-1 overflow-y-auto sidebar-scroll py-2 divide-y divide-white/5">
+        <div className="relative z-[1] flex-1 overflow-y-auto sidebar-scroll py-2 divide-y divide-white/5">
           {NAV_GROUPS.map((group) => renderNavGroup(group.name, group.items))}
         </div>
 
         {/* Footer Collapse Toggle */}
-        <div className="p-3 border-t border-white/10 shrink-0 hidden md:block">
+        <div className="relative z-[1] p-3 border-t border-white/10 shrink-0 hidden md:block">
           <button
             onClick={() => setCollapsed(!collapsed)}
             className={`w-full flex items-center gap-3 h-[40px] px-3 rounded-[8px] text-[13px] font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors ${
